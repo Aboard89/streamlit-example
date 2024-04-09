@@ -1,40 +1,30 @@
-import altair as alt
-import numpy as np
-import pandas as pd
 import streamlit as st
+import pandas as pd
 
-"""
-# Welcome to Streamlit!
+# Load the data
+@st.cache
+def load_data():
+    data = pd.read_csv('Streamlit_dataset.csv')
+    return data
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+data = load_data()
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+# Sidebar - Year selection
+selected_year = st.sidebar.selectbox('Select a Year', data['Year'].unique())
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+# Sidebar - Location selection based on the year
+filtered_data_by_year = data[data['Year'] == selected_year]
+selected_location = st.sidebar.selectbox('Select a Location', filtered_data_by_year['Location'].unique())
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+# Filtering data based on selection
+filtered_data = filtered_data_by_year[filtered_data_by_year['Location'] == selected_location]
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
+# Get race winner
+race_winner = filtered_data[filtered_data['Race Winner'] == 1]['Driver Name'].iloc[0]
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
+# Get predicted race winner
+predicted_winner = filtered_data[filtered_data['Predicted Winner']].iloc[0]['Driver Name']
 
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+# Display the results
+st.write(f"Actual Race Winner for {selected_year} in {selected_location}: {race_winner}")
+st.write(f"Predicted Race Winner for {selected_year} in {selected_location}: {predicted_winner}")
