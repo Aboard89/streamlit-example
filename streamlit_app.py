@@ -25,6 +25,9 @@ if not race_winner_data.empty:
 else:
     race_winner = 'No winner data'
 
+# Display race winner
+st.write("Race Winner:", race_winner)
+
 # Get predicted race winner
 predicted_winner_data = filtered_data[filtered_data['Predicted_Winner']]
 if not predicted_winner_data.empty:
@@ -32,7 +35,6 @@ if not predicted_winner_data.empty:
 else:
     predicted_winner = 'No predicted winner data'
 
-# Display the results
-st.write(f"Actual Race Winner for {selected_year} in {selected_location}: {race_winner}")
-st.write(f"Predicted Race Winner for {selected_year} in {selected_location}: {predicted_winner}")
+# Display predicted race winner
+st.write("Predicted Race Winner:", predicted_winner)
 
