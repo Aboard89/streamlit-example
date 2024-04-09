@@ -26,7 +26,7 @@ else:
     race_winner = 'No winner data'
 
 # Get predicted race winner
-predicted_winner_data = filtered_data[filtered_data['race_win']]
+predicted_winner_data = filtered_data[filtered_data['Predicted_Winner']]
 if not predicted_winner_data.empty:
     predicted_winner = predicted_winner_data['driver_name'].iloc[0]
 else:
