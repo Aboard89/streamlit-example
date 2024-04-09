@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 
 # Load the data
-@st.cache
 def load_data():
     data = pd.read_csv('Streamlit_dataset.csv')
     return data
