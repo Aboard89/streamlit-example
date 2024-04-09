@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import streamlit.components.v1 as components
 
 # Load the data
 def load_data():
@@ -38,3 +39,11 @@ else:
 # Display predicted race winner
 st.write("Predicted Race Winner:", predicted_winner)
 
+# Embedding Wikipedia.org using an iframe
+# Note: Wikipedia might not load due to CSP restrictions
+iframe_code = f"""
+<iframe src="https://www.wikipedia.org/" width="100%" height="400">
+  Your browser does not support iframes.
+</iframe>
+"""
+components.html(iframe_code, height=400)
