@@ -29,7 +29,7 @@ else:
 st.write("Race Winner:", race_winner)
 
 # Get predicted race winner
-predicted_winner_data = filtered_data[filtered_data['Predicted_Winner']]
+predicted_winner_data = filtered_data[filtered_data['Predicted_Winner'] == 1]
 if not predicted_winner_data.empty:
     predicted_winner = predicted_winner_data['driver_name'].iloc[0]
 else:
