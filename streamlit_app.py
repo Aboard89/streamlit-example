@@ -13,7 +13,7 @@ data = load_data()
 selected_year = st.sidebar.selectbox('Select a Year', data['year'].unique())
 
 # Sidebar - Location selection based on the year
-filtered_data_by_year = data[data['Year'] == selected_year]
+filtered_data_by_year = data[data['year'] == selected_year]
 selected_location = st.sidebar.selectbox('Select a Location', filtered_data_by_year['location'].unique())
 
 # Filtering data based on selection
