@@ -4,8 +4,9 @@ import pandas as pd
 # Load the data (replace with the path to your CSV file)
 @st.cache
 def load_data():
-    data = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv')
+    data = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')  # or 'utf-16', 'cp1252', etc.
     return data
+
 
 df = load_data()
 
