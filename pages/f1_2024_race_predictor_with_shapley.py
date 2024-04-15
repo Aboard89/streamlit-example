@@ -14,12 +14,12 @@ st.write("""
 # Load data functions
 @st.cache
 def load_data():
-    data = pd.read_csv('/mnt/data/2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
+    data = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
     return data
 
 @st.cache
 def load_shap_values():
-    shap_values = pd.read_csv('/mnt/data/shap_values.csv', encoding='ISO-8859-1')
+    shap_values = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
     return shap_values
 
 df = load_data()
