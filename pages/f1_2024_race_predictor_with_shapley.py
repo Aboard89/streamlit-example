@@ -33,7 +33,13 @@ selected_race = st.selectbox('Select a Race', races)
 # Function to get the top driver for the selected race
 def get_top_driver(selected_race):
     race_df = df[df['race'] == selected_race]
-    top_driver = race_df.nlargest(1, 'prediction_probability')[['Driver', 'prediction_probability', 'index']]
+    print("Available columns at this point:", race_df.columns.tolist())  # Debug statement
+    try:
+        top_driver = race_df.nlargest(1, 'prediction_probability')
+        top_driver = top_driver[['Driver', 'prediction_probability', 'index']]
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        return pd.DataFrame()
     return top_driver
 
 if st.button('Show Top Driver'):
@@ -64,6 +70,3 @@ if st.button('Show Top Driver'):
 def st_shap(plot, height=None):
     shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
     st.components.v1.html(shap_html, height=height)
-
-# To run the Streamlit app, save this code in a file app.py and run it with:
-# streamlit run app.py
