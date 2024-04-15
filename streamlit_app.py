@@ -1,5 +1,6 @@
 # app.py or streamlit_app.py
 import streamlit as st
+pip install matplotlib
 import matplotlib.pyplot as plt
 from pages import race_winner, top_3_drivers  # Assumes 'race_winner.py' and 'top_3_drivers.py' are inside a 'pages' folder
 
