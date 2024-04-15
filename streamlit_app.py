@@ -6,7 +6,7 @@ PAGES = {
     "Top 3 Drivers": 1. f1_2024_race_predictor,
     "Top Driver": 2. f1_2024_top_driver,
     "Shapley Values": 3. Shapley Values,
-    "Project Conclusion": 4. project_conclusions
+    "Project Conclusion": 4. project_conclusions,
 }
 
 st.sidebar.title('Navigation')
