@@ -1,6 +1,18 @@
 import streamlit as st
 import pandas as pd
 import shap
+import pickle
+import os
+
+# Load the model from a .pkl file
+@st.cache(allow_output_mutation=True)
+def load_model():
+    model_path = 'random_forest_grid_search.pkl'
+    with open(model_path, 'rb') as file:
+        model = pickle.load(file)
+    return model
+
+model = load_model()
 
 st.title('2024 F1 Race Predictions')
 st.write("""
@@ -10,22 +22,9 @@ st.write("""
          corresponding SHAP force plot displaying their impact on the prediction.
          """)
 
-# Load data functions
-@st.cache
-def load_data():
-    data = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
-    data['index'] = data.index  # Ensure index is a column
-    return data
-
-df = load_data()
-
-# Load the Shapley values data
-@st.cache
-def load_shap_values():
-    shap_values = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
-    return shap_values
-
-shap_df = load_shap_values()
+# Load data
+df = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
+shap_df = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
 
 # Dropdown to select race
 races = df['race'].unique()
@@ -34,25 +33,24 @@ selected_race = st.selectbox('Select a Race', races)
 # Function to get the top driver for the selected race
 def get_top_driver(selected_race):
     race_df = df[df['race'] == selected_race]
-    print(race_df.columns)  # Debugging to check column names
     top_driver = race_df.nlargest(1, 'prediction_probability')[['Driver', 'prediction_probability', 'index']]
-    return top_driver.iloc[0]  # Return the top driver as a Series
+    return top_driver.iloc[0]
 
 if st.button('Show Top Driver'):
     top_driver = get_top_driver(selected_race)
     st.write(top_driver)
 
-    # Extracting the index from the top driver row
+    # Filter Shapley values for the top driver using the index from top_driver
     driver_index = top_driver['index']
-    
-    # Filter Shapley values for the top driver using the index
-    driver_shap_values = shap_df.iloc[driver_index]
+    driver_features = shap_df.iloc[driver_index].drop('output', axis=1)  # assuming 'output' is the prediction column
 
-    # SHAP plotting
-    explainer = shap.Explainer(lambda x: x)  # Dummy explainer
-    shap_values = explainer.shap_values(driver_shap_values.iloc[:-1])  # Assume last column is output
-    force_plot = shap.force_plot(explainer.expected_value, shap_values, feature_names=driver_shap_values.index[:-1])
+    # Create a SHAP explainer and calculate SHAP values
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(driver_features)
 
-    # Display SHAP plot
+    # Create a force plot for the top driver's SHAP values
+    force_plot = shap.force_plot(explainer.expected_value[1], shap_values[1], driver_features)
+
+    # Convert SHAP plot to HTML and display in Streamlit
     shap_html = f"<head>{shap.getjs()}</head><body>{force_plot.html()}</body>"
     st.components.v1.html(shap_html, height=300)
