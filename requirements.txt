@@ -3,3 +3,5 @@ pandas
 streamlit
 matplotlib
 shap
+scikit-learn==0.24.1  # Specific version
+scikit-learn          # Latest version
