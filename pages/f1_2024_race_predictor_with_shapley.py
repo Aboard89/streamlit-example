@@ -33,18 +33,19 @@ selected_race = st.selectbox('Select a Race', races)
 # Filter the dataframe for the selected race and calculate the top 3 drivers
 def get_top_3_drivers(selected_race):
     race_df = df[df['race'] == selected_race]
-    top_3_drivers = race_df.nlargest(3, 'prediction_probability')[['Driver', 'prediction_probability']]
+    top_3_drivers = race_df.nlargest(3, 'prediction_probability')[['Driver', 'prediction_probability', 'index']]
     return top_3_drivers
 
 if st.button('Show Top 3 Drivers'):
     top_3_drivers = get_top_3_drivers(selected_race)
     st.write(top_3_drivers)
     
-    # Find the top driver
-    top_driver = top_3_drivers.iloc[0]['Driver']
+    # Find the top driver and corresponding index
+    top_driver = top_3_drivers.iloc[0]
+    driver_index = top_driver['index']
     
-    # Filter Shapley values for the top driver
-    driver_shap_values = shap_df[shap_df['Driver'] == top_driver]
+    # Filter Shapley values for the top driver using the index
+    driver_shap_values = shap_df.loc[driver_index]
     
     # Assuming the Shapley values and the features data is loaded correctly
     # Initiate Javascript for visualization
@@ -54,8 +55,8 @@ if st.button('Show Top 3 Drivers'):
     # You may need to adjust indices and structures depending on your actual data setup
     force_plot = shap.force_plot(
         explainer.expected_value[1],  # Use the expected value for the positive class
-        driver_shap_values.values[0],  # SHAP values for the top driver (ensure this matches your data structure)
-        feature_names=shap_df.columns  # Assuming feature names are in the SHAP DataFrame
+        driver_shap_values.values,    # SHAP values for the top driver (ensure this matches your data structure)
+        feature_names=shap_df.columns # Assuming feature names are in the SHAP DataFrame
     )
     
     # Display the SHAP force plot in Streamlit
