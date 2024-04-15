@@ -3,8 +3,10 @@ import streamlit as st
 from pages import race_winner, top_3_drivers  # Assumes 'race_winner.py' and 'top_3_drivers.py' are inside a 'pages' folder
 
 PAGES = {
-    "Race Winner": race_winner,
-    "Top 3 Drivers": top_3_drivers
+    "Top 3 Drivers": 1. f1_2024_race_predictor,
+    "Top Driver": 2. f1_2024_top_driver,
+    "Shapley Values": 3. Shapley Values,
+    "Project Conclusion": 4. project_conclusions
 }
 
 st.sidebar.title('Navigation')
