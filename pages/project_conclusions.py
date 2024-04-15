@@ -15,14 +15,14 @@ Starting grid position, accumulated points throughout the season, and team dynam
 """)
 
 st.header("Model Performance")
-st.image("Random_Forest_SMOTE_F1.png", caption="Model Performance in Predicting F1 Winners")
+st.image("best_model.png", caption="Model Performance in Predicting F1 Winners")
 
 st.write("""
 Our Random Forest model with SMOTE achieved impressive accuracy and F1 scores, making it a reliable tool for predicting race winners. The model's predictions for the 2024 season showed promising results, accurately forecasting winners with high confidence.
 """)
 
 st.header("Financial Analysis of Model Predictions")
-st.image("would_we_have_won_money.png", caption="Financial Outcomes Based on Model Predictions")
+st.image("betting_results.png", caption="Financial Outcomes Based on Model Predictions")
 
 st.write("""
 The model's predictions resulted in a 46% return on investment for selected races, demonstrating its potential to assist in profitable betting strategies. However, betting carries risks, and outcomes can never be guaranteed.
