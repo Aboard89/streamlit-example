@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 import shap
-import pickle
 
+st.title('F1 Race Prediction SHAP Value Plot')
+
+# Function to load the model
 def load_model():
     model_path = 'random_forest_grid_search.pkl'
     with open(model_path, 'rb') as file:
@@ -11,36 +13,42 @@ def load_model():
 
 best_pipeline = load_model()
 rf_model = best_pipeline.named_steps['clf']
-scaler = best_pipeline.named_steps['scl']
 
-shap_values_df = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
-if 'output' in shap_values_df.columns:
-    shap_values_df = shap_values_df.drop(columns=['output'])
-feature_names = shap_values_df.columns
+# Function to generate SHAP plot from precomputed SHAP values
+def generate_shap_plot(index_number):
+    try:
+        # Load SHAP values from the csv
+        shap_values_df = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
+        
+        # Check if the index number is within the range of the DataFrame
+        if not (0 <= index_number < len(shap_values_df)):
+            st.error(f"Index is out of bounds. Please enter a number between 0 and {len(shap_values_df)-1}.")
+            return
 
-st.title('F1 Race Prediction SHAP Value Plot')
+        # Select the row with the SHAP values for the chosen index
+        shap_values_row = shap_values_df.iloc[index_number]
 
-index_number = st.number_input('Enter the index number from the F1 Race prediction app:', min_value=0, format='%d')
+        # Assuming your CSV has columns for SHAP values only
+        shap_values_to_plot = shap_values_row.values
+        
+        # Set the baseline as 0.05 for the probability
+        base_value = 0.05
 
+        # Generate the SHAP force plot
+        force_plot = shap.force_plot(
+            base_value,
+            shap_values_to_plot,
+            feature_names=shap_values_df.columns
+        )
+        
+        # Convert the plot to HTML and display it
+        shap_html = f"<head>{shap.getjs()}</head><body>{force_plot.html()}</body>"
+        st.components.v1.html(shap_html, height=300)
+        
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
+# Streamlit UI for input and button
+index_number = st.number_input('Enter the index number from the F1 Race prediction app:', min_value=0, value=0, format='%d')
 if st.button('Generate SHAP Plot'):
-    if index_number >= len(shap_values_df):
-        st.error(f"Index is out of bounds. Please enter a number between 0 and {len(shap_values_df)-1}.")
-    else:
-        try:
-            driver_shap_values = shap_values_df.iloc[index_number].values.reshape(1, -1)
-            driver_features_transformed = scaler.transform(driver_shap_values)
-            explainer = shap.TreeExplainer(rf_model)
-            shap_values = explainer.shap_values(driver_features_transformed)
-
-            force_plot = shap.force_plot(
-                explainer.expected_value[1], 
-                shap_values[1],
-                driver_features_transformed,
-                feature_names=feature_names
-            )
-
-            shap_html = f"<head>{shap.getjs()}</head><body>{force_plot.html()}</body>"
-            st.components.v1.html(shap_html, height=300)
-
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+    generate_shap_plot(index_number)
