@@ -1,49 +1,27 @@
 import streamlit as st
 import pandas as pd
-import streamlit.components.v1 as components
 
-# Load the data
+# Load the data (replace with the path to your CSV file)
+@st.cache
 def load_data():
-    data = pd.read_csv('Streamlit_dataset.csv')
+    data = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv')
     return data
 
-data = load_data()
+df = load_data()
 
-# Sidebar - Year selection
-selected_year = st.sidebar.selectbox('Select a Year', data['year'].unique())
+# Select a unique list of races to choose from
+races = df['race'].unique()
+selected_race = st.selectbox('Select a Race', races)
 
-# Sidebar - Location selection based on the year
-filtered_data_by_year = data[data['year'] == selected_year]
-selected_location = st.sidebar.selectbox('Select a Location', filtered_data_by_year['location'].unique())
+# Filter the dataframe for the selected race and calculate the top 3 drivers
+def get_top_3_drivers(selected_race):
+    race_df = df[df['race'] == selected_race]
+    top_3_drivers = race_df.nlargest(3, 'prediction_probability')[['Driver', 'prediction_probability']]
+    return top_3_drivers
 
-# Filtering data based on selection
-filtered_data = filtered_data_by_year[filtered_data_by_year['location'] == selected_location]
+if st.button('Show Top 3 Drivers'):
+    top_3_drivers = get_top_3_drivers(selected_race)
+    st.write(top_3_drivers)
 
-# Get race winner
-race_winner_data = filtered_data[filtered_data['race_win'] == 1]
-if not race_winner_data.empty:
-    race_winner = race_winner_data['driver_name'].iloc[0]
-else:
-    race_winner = 'No winner data'
-
-# Display race winner
-st.write("Race Winner:", race_winner)
-
-# Get predicted race winner
-predicted_winner_data = filtered_data[filtered_data['Predicted_Winner'] == 1]
-if not predicted_winner_data.empty:
-    predicted_winner = predicted_winner_data['driver_name'].iloc[0]
-else:
-    predicted_winner = 'No predicted winner data'
-
-# Display predicted race winner
-st.write("Predicted Race Winner:", predicted_winner)
-
-# Embedding Wikipedia.org using an iframe
-# Note: Wikipedia might not load due to CSP restrictions
-iframe_code = f"""
-<iframe src="https://www.wikipedia.org/" width="100%" height="400">
-  Your browser does not support iframes.
-</iframe>
-"""
-components.html(iframe_code, height=400)
+# To run the Streamlit app, save this code in a file app.py and run it with:
+# streamlit run app.py
