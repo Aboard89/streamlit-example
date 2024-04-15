@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import shap
+import pickle  # Make sure this import statement is included
 
 st.title('F1 Race Prediction SHAP Value Plot')
 
@@ -8,11 +9,15 @@ st.title('F1 Race Prediction SHAP Value Plot')
 def load_model():
     model_path = 'random_forest_grid_search.pkl'
     with open(model_path, 'rb') as file:
-        grid_search_cv = pickle.load(file)
+        grid_search_cv = pickle.load(file)  # Ensure 'pickle' is imported
     return grid_search_cv.best_estimator_
 
-best_pipeline = load_model()
-rf_model = best_pipeline.named_steps['clf']
+# Check if the 'load_model' function is being called correctly
+try:
+    best_pipeline = load_model()
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+    st.stop()
 
 # Function to generate SHAP plot from precomputed SHAP values
 def generate_shap_plot(index_number):
