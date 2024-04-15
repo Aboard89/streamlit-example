@@ -7,7 +7,7 @@ import os
 # Load the complete pipeline model from a .pkl file
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model_path = 'full_pipeline_model.pkl'  # Update the path if necessary
+    model_path = 'random_forest_grid_search.pkl'  # Update the path if necessary
     try:
         with open(model_path, 'rb') as file:
             pipeline = pickle.load(file)
