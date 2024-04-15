@@ -1,7 +1,9 @@
+# f1_2024_top_driver.py
 import streamlit as st
 import pandas as pd
 import pickle
 
+# Function to load the model from a pickle file
 @st.cache(allow_output_mutation=True)
 def load_model():
     model_path = 'random_forest_grid_search.pkl'
@@ -13,25 +15,30 @@ def load_model():
         st.error(f"Failed to load the model. Error: {e}")
         return None
 
-best_pipeline = load_model()
+# Define the app function to be called from the main Streamlit app
+def app():
+    best_pipeline = load_model()
+    
+    if best_pipeline is None:
+        st.stop()
 
-if best_pipeline is None:
-    st.stop()
+    st.title('2024 F1 Race Predictions')
 
-st.title('2024 F1 Race Predictions')
+    # Load race data
+    df = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
 
-# Load race data
-df = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
+    # Dropdown and race selection
+    races = df['race'].unique()
+    selected_race = st.selectbox('Select a Race', races)
 
-# Dropdown and race selection
-races = df['race'].unique()
-selected_race = st.selectbox('Select a Race', races)
+    # Function to get the top driver for the selected race
+    def get_top_driver(selected_race):
+        race_df = df[df['race'] == selected_race]
+        top_driver = race_df.nlargest(1, 'prediction_probability')[['Driver', 'prediction_probability', 'index']]
+        return top_driver.iloc[0]
 
-def get_top_driver(selected_race):
-    race_df = df[df['race'] == selected_race]
-    top_driver = race_df.nlargest(1, 'prediction_probability')[['Driver', 'prediction_probability', 'index']]
-    return top_driver.iloc[0]
+    if st.button('Show Top Driver'):
+        top_driver = get_top_driver(selected_race)
+        st.write('Top Driver:', top_driver)
 
-if st.button('Show Top Driver'):
-    top_driver = get_top_driver(selected_race)
-    st.write('Top Driver:', top_driver)
+# Note: To run the Streamlit app, this function should be called in the main app file, which manages navigation.
