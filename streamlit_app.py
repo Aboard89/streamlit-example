@@ -1,6 +1,6 @@
 # app.py or streamlit_app.py
 import streamlit as st
-from pages import race_winner, top_3_drivers  # Assumes 'race_winner.py' and 'top_3_drivers.py' are inside a 'pages' folder
+from pages import 1. f1_2024_race_predictor, 2. f1_2024_top_driver, 3. Shapley Values, 4. project_conclusions  # Assumes 'race_winner.py' and 'top_3_drivers.py' are inside a 'pages' folder
 
 PAGES = {
     "Top 3 Drivers": 1. f1_2024_race_predictor,
