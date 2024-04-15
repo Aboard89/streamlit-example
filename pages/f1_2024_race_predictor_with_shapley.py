@@ -21,7 +21,7 @@ df = load_data()
 # Load the Shapley values data
 @st.cache
 def load_shap_values():
-    shap_values = pd.read_csv('shap_values.csv')
+    shap_values = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
     return shap_values
 
 shap_df = load_shap_values()
