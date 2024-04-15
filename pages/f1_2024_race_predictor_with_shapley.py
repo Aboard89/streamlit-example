@@ -13,7 +13,7 @@ st.write("""
 # Load the race predictions data with index as a column
 @st.cache
 def load_data():
-    data = pd.read_csv('/mnt/data/2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
+    data = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
     data.reset_index(inplace=True, drop=False)  # Ensure index is a column in the DataFrame
     return data
 
@@ -22,7 +22,7 @@ df = load_data()
 # Load the Shapley values data
 @st.cache
 def load_shap_values():
-    shap_values = pd.read_csv('/mnt/data/shap_values.csv', encoding='ISO-8859-1')
+    shap_values = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
     return shap_values
 
 shap_df = load_shap_values()
