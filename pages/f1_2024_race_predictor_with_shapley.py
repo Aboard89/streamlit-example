@@ -4,21 +4,21 @@ import shap
 import pickle
 import os
 
-# Load the complete pipeline model from a .pkl file
+# Load the complete GridSearchCV model from a .pkl file
 @st.cache(allow_output_mutation=True)
 def load_model():
-    model_path = 'random_forest_grid_search.pkl'  # Ensure this is the correct path
+    model_path = 'random_forest_grid_search.pkl'
     try:
         with open(model_path, 'rb') as file:
-            pipeline = pickle.load(file)
-        return pipeline
+            grid_search_cv = pickle.load(file)
+        return grid_search_cv.best_estimator_  # Access the best estimator of the GridSearch
     except Exception as e:
         st.error(f"Failed to load the model. Error: {e}")
         return None
 
-pipeline = load_model()
+best_pipeline = load_model()
 
-if pipeline is None:
+if best_pipeline is None:
     st.stop()
 
 st.title('2024 F1 Race Predictions')
@@ -26,9 +26,6 @@ st.title('2024 F1 Race Predictions')
 # Load data
 df = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
 shap_df = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
-
-# Log or display column names for troubleshooting
-st.write("SHAP DataFrame columns:", shap_df.columns)
 
 # Dropdown and race selection
 races = df['race'].unique()
@@ -44,18 +41,19 @@ if st.button('Show Top Driver'):
     st.write(top_driver)
 
     driver_index = top_driver['index']
-    # Check if 'output' column exists and then drop it
     if 'output' in shap_df.columns:
         driver_features = shap_df.loc[[driver_index]].drop('output', axis=1)
     else:
         st.error("'output' column not found in SHAP DataFrame.")
-        driver_features = shap_df.loc[[driver_index]]  # Proceed without dropping
+        st.stop()
 
-    # Assuming the pipeline includes necessary transformers and the final classifier
-    rf_model = pipeline.named_steps['clf']  # Check your pipeline configuration
+    # Assuming default naming, access the RandomForestClassifier with 'randomforestclassifier'
+    rf_model = best_pipeline.named_steps['randomforestclassifier']
     explainer = shap.TreeExplainer(rf_model)
 
-    # Generate SHAP values
+    # Since 'driver_features' need to be 2D, ensure they are in the correct shape
+    if len(driver_features.shape) == 1:
+        driver_features = driver_features.values.reshape(1, -1)
     shap_values = explainer.shap_values(driver_features)
 
     force_plot = shap.force_plot(explainer.expected_value[1], shap_values[1], driver_features, link='logit')
