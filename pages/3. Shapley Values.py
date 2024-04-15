@@ -37,7 +37,7 @@ def generate_shap_plot(index_number):
         shap_values_to_plot = shap_values_row.values
         
         # Set the baseline as 0.05 for the probability
-        base_value = 0.05
+        base_value = 0.501
 
         # Generate the SHAP force plot
         force_plot = shap.force_plot(
