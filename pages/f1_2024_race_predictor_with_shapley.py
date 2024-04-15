@@ -8,11 +8,18 @@ import os
 @st.cache(allow_output_mutation=True)
 def load_model():
     model_path = 'random_forest_grid_search.pkl'
-    with open(model_path, 'rb') as file:
-        model = pickle.load(file)
-    return model
+    try:
+        with open(model_path, 'rb') as file:
+            model = pickle.load(file)
+        return model
+    except Exception as e:
+        st.error(f"Failed to load the model. Error: {e}")
+        return None
 
 model = load_model()
+
+if model is None:
+    st.stop()
 
 st.title('2024 F1 Race Predictions')
 st.write("""
