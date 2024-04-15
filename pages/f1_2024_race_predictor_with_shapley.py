@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
-import shap
 import pickle
-import os
 
 @st.cache(allow_output_mutation=True)
 def load_model():
@@ -22,9 +20,8 @@ if best_pipeline is None:
 
 st.title('2024 F1 Race Predictions')
 
-# Load race data and shap values
+# Load race data
 df = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
-shap_values_df = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
 
 # Dropdown and race selection
 races = df['race'].unique()
@@ -38,36 +35,3 @@ def get_top_driver(selected_race):
 if st.button('Show Top Driver'):
     top_driver = get_top_driver(selected_race)
     st.write('Top Driver:', top_driver)
-
-    driver_index = top_driver['index'].astype(int)
-    
-    # Access the RandomForestClassifier using the correct step name 'clf'
-    rf_model = best_pipeline.named_steps['clf']
-    
-    # Assuming that the last column of shap_values_df is the output value, which we do not need for the plot
-    driver_shap_values = shap_values_df.iloc[driver_index, :-1]  # Excluding the last column if it's not a feature
-    
-    # Now you need to make sure to transform the features as the original model was trained with scaled features
-    scaler = best_pipeline.named_steps['scl']  # Access the scaler
-    driver_features_transformed = scaler.transform(driver_shap_values.values.reshape(1, -1))
-    
-    explainer = shap.TreeExplainer(rf_model)
-    
-    # Calculate SHAP values for the transformed features
-    shap_values = explainer.shap_values(driver_features_transformed)
-    
-    # Get feature names, excluding the 'output' if it's present
-    feature_names = shap_values_df.columns[:-1] if 'output' in shap_values_df.columns else shap_values_df.columns
-    
-    # Now we plot, using the correct expected_value index if it's a classification problem
-    force_plot = shap.force_plot(
-        explainer.expected_value[1],  # Index [1] for the positive class; use [0] for the negative class if binary classification
-        shap_values[1],  # Same here for the positive class
-        feature_names=feature_names  # Use the correct feature names
-    )
-    
-    # Convert the plot to HTML
-    shap_html = f"<head>{shap.getjs()}</head><body>{force_plot.html()}</body>"
-    
-    # Display in Streamlit
-    st.components.v1.html(shap_html, height=300)
