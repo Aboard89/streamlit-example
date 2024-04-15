@@ -15,7 +15,11 @@ scaler = best_pipeline.named_steps['scl']
 
 # Load SHAP values and feature names
 shap_values_df = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
-feature_names = shap_values_df.drop(columns=['output']).columns
+
+# Check if 'output' column exists and drop it if it does
+if 'output' in shap_values_df.columns:
+    shap_values_df = shap_values_df.drop(columns=['output'])
+feature_names = shap_values_df.columns
 
 st.title('F1 Race Prediction SHAP Value Plot')
 
@@ -25,7 +29,7 @@ index_number = st.number_input('Enter the index number from the F1 Race predicti
 if st.button('Generate SHAP Plot'):
     try:
         # Assuming index number is used as the row index in shap_values_df
-        driver_shap_values = shap_values_df.iloc[index_number, :-1].values.reshape(1, -1)
+        driver_shap_values = shap_values_df.iloc[index_number].values.reshape(1, -1)
         driver_features_transformed = scaler.transform(driver_shap_values)
         explainer = shap.TreeExplainer(rf_model)
         shap_values = explainer.shap_values(driver_features_transformed)
