@@ -4,14 +4,13 @@ import shap
 import pickle
 import os
 
-# Load the complete GridSearchCV model from a .pkl file
 @st.cache(allow_output_mutation=True)
 def load_model():
     model_path = 'random_forest_grid_search.pkl'
     try:
         with open(model_path, 'rb') as file:
             grid_search_cv = pickle.load(file)
-        return grid_search_cv.best_estimator_  # Access the best estimator of the GridSearch
+        return grid_search_cv.best_estimator_
     except Exception as e:
         st.error(f"Failed to load the model. Error: {e}")
         return None
@@ -23,9 +22,9 @@ if best_pipeline is None:
 
 st.title('2024 F1 Race Predictions')
 
-# Load data
+# Load race data and shap values
 df = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
-shap_df = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
+shap_values_df = pd.read_csv('shap_values.csv', encoding='ISO-8859-1')
 
 # Dropdown and race selection
 races = df['race'].unique()
@@ -38,24 +37,30 @@ def get_top_driver(selected_race):
 
 if st.button('Show Top Driver'):
     top_driver = get_top_driver(selected_race)
-    st.write(top_driver)
+    st.write('Top Driver:', top_driver)
 
-    driver_index = top_driver['index']
-    if 'output' in shap_df.columns:
-        driver_features = shap_df.loc[[driver_index]].drop('output', axis=1)
-    else:
-        st.error("'output' column not found in SHAP DataFrame.")
-        st.stop()
-
-    # Assuming default naming, access the RandomForestClassifier with 'randomforestclassifier'
+    driver_index = top_driver['index'].astype(int)
+    # Get the SHAP values for the top driver
+    driver_shap_values = shap_values_df.iloc[driver_index, :-1]  # Excluding the last column if it's not a feature
+    # Create a force plot for the top driver's SHAP values
     rf_model = best_pipeline.named_steps['randomforestclassifier']
     explainer = shap.TreeExplainer(rf_model)
-
-    # Since 'driver_features' need to be 2D, ensure they are in the correct shape
-    if len(driver_features.shape) == 1:
-        driver_features = driver_features.values.reshape(1, -1)
-    shap_values = explainer.shap_values(driver_features)
-
-    force_plot = shap.force_plot(explainer.expected_value[1], shap_values[1], driver_features, link='logit')
-    shap_html = f"<head>{shap.getjs()}</head><body>{shap.force_plot(explainer.expected_value[1], shap_values[1], driver_features, link='logit', matplotlib=True).data}</body>"
+    
+    # Assuming that the last column of shap_values_df is the output value, which we do not need for the plot
+    shap_values = explainer.shap_values(shap_values_df.drop(columns=['output']).iloc[driver_index])
+    
+    # If you need to transform features (e.g., scaling) before plotting, do it here.
+    # driver_features_transformed = best_pipeline.named_steps['standardscaler'].transform(driver_features)
+    
+    # Now we plot, using the correct expected_value index if it's a classification problem
+    force_plot = shap.force_plot(
+        explainer.expected_value[1],  # Index [1] for the positive class; use [0] for the negative class if binary classification
+        shap_values[1],  # Same here for the positive class
+        feature_names=shap_values_df.drop(columns=['output']).columns  # Adjust if your DataFrame structure is different
+    )
+    
+    # Convert the plot to HTML
+    shap_html = f"<head>{shap.getjs()}</head><body>{force_plot.html()}</body>"
+    
+    # Display in Streamlit
     st.components.v1.html(shap_html, height=300)
