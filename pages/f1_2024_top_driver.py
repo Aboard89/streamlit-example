@@ -23,6 +23,7 @@ def app():
         st.stop()
 
     st.title('2024 F1 Race Predictions')
+    st.image("maxresdefault.jpg")
 
     # Load race data
     df = pd.read_csv('2024_Races_with_predictions_full_streamlit.csv', encoding='ISO-8859-1')
