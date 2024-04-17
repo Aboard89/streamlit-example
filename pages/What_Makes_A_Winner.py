@@ -37,7 +37,7 @@ def app():
     This chart presents a clear visualization of how pole position influences race outcomes across different Grand Prix. It's evident that the Spanish, Italian and Japanese Grand Prix see a higher percentage of wins from the pole position, suggesting that the track layout or other factors in these locations might give the leading starter a more pronounced advantage. Conversely, races like the British and Belgian Grand Prix show a lower reliance on pole position for a win, indicating that these tracks may allow for more overtaking or that strategy and car performance play a more significant role. This analysis is invaluable as it directs our modeling efforts towards considering the unique characteristics of each circuit and their impact on race strategy and outcomes.
     """)
 
-       st.header("Does racing at home make a difference?")
+    st.header("Does racing at home make a difference?")
     st.image("Home_race_wins.jpg", caption="Home_race_wins")
 
     st.write("""
