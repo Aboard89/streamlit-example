@@ -17,7 +17,7 @@ def app():
     """)
 
     st.header("Which is the most successful engine manufacturer?")
-    st.image("Wins_by_engine.jpg", caption="Wins by position")
+    st.image("Wins_by_engine.jpg", caption="Wins by Engine Manufacturer")
 
     st.write("""
     This chart offers a fascinating look into the dominance of engine manufacturers in Formula 1 over an unspecified period, crucial for understanding trends that could influence the outcome of races. Mercedes stands out with the highest number of wins, indicating their engines might give teams an edge. Ferrari and Renault follow, suggesting they are also competitive, while the presence of, Honda, Red Bull, BMW, Mugen-Honda, and Ford illustrates a more diverse field of engine suppliers with victories. Analyzing these patterns helps us predict which manufacturers could contribute to a team's success, as a superior engine often translates into a critical advantage on the track. This information is invaluable for our predictive modeling, as it underscores the significant role of engine performance in racing triumphs.
