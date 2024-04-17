@@ -9,7 +9,7 @@ def app():
     Embarking on a quest within the high-octane world of Formula 1, this data science project's exploratory phase seeks to decode the myriad factors influencing race outcomes. Through a rigorous exploratory data analysis, we probe deep into a dataset brimming with the sport's storied legacy, tackling questions such as the impact of a team's prestige on victory likelihood, and whether historical success translates into future performance. 
     """)
 
-    st.header("Which teams are the best to drive For?")
+    st.header("Which teams are the best to drive for?")
     st.image("Wins_by_team.jpg", caption="Wins by team")
 
     st.write("""
