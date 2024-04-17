@@ -18,6 +18,7 @@ def get_top_3_drivers(selected_race, df):
 # Define the app function to be called from the main Streamlit app
 def app():
     st.title('2024 F1 Race Predictions')
+    st.image("maxresdefault.jpg")
     st.write("""
              Welcome to the 2024 F1 Race Predictions app. Here you can select a specific race to see 
              the top 3 predicted drivers based on our model's prediction probability. Simply choose a race 
